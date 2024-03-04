@@ -1,3 +1,7 @@
+"""
+Версия API 1.0 для примера шаблона документирования
+"""
+
 from fastapi import APIRouter
 
 from .example import example_router

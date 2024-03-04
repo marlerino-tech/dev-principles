@@ -5,6 +5,11 @@ name = "pypi"
 
 [packages]
 fastapi = "*"
+requests = "*"
+uvicorn = "*"
+gunicorn = "*"
+pydantic = "==1.10.14"
+python-dotenv = "*"
 
 [dev-packages]
 

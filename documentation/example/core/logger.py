@@ -21,6 +21,20 @@ def send_telegram_message(token: str, chat_ids: list[int], message: str):
 
 
 class TelegramHandler(logging.Handler):
+    """
+    Handler для того, чтобы отправлять telegram сообщения при логгировании
+
+    Note:
+        Не включайте `self` параметра в ``Args`` секцию.
+
+    Args:
+        token (str): Токен для бота
+        chat_ids (list[int]): Список chat_id куда отправлять
+
+    Attributes:
+        token (str): Токен для бота
+        chat_ids (list[int]): Список chat_id куда отправлять
+    """
     def __init__(self, token: str, chat_ids: list[int]):
         super().__init__()
         self.token = token
@@ -33,7 +47,16 @@ class TelegramHandler(logging.Handler):
 
 
 class AdvLogger:
-    """Логирование работы приложения"""
+    """
+    Класс для логгирование работы приложения, использует logging
+
+    Args:
+        logger_name (str): Имя логгера
+
+    Attributes:
+        logger_name (str): Имя логгера
+
+    """
 
     def __init__(self, logger_name: str):
         self.logger: Logger = logging.getLogger(logger_name)
@@ -46,6 +69,9 @@ class AdvLogger:
             formatter=formatter,
             level=logging.DEBUG,
         )
+        """
+        Базовые handler для записи в консоль
+        """
 
         current_date = datetime.now().strftime("%Y_%m_%d")
         log_filename = os.path.join(config.PATH_LOG, f"log_{current_date}.log")
@@ -56,11 +82,18 @@ class AdvLogger:
             formatter=formatter,
             level=logging.INFO,
         )
+        """
+        Базовые handler для записи в файлы
+        """
+
         telegram_handler: Handler = self.init_handler(
             handler_class=TelegramHandler(config.BOT_TOKEN, config.CHAT_IDS),
             formatter=formatter,
             level=logging.WARNING,
         )
+        """
+        Самописный handler для отправки сообщения в telegram
+        """
 
         self.logger.addHandler(stream_handler)
         self.logger.addHandler(file_handler)
@@ -75,5 +108,21 @@ class AdvLogger:
         handler.setLevel(level)
         return handler
 
-    def write_log(self, level: Union[str, int], msg: str) -> NoReturn:
+    def write_log(self, level: str, msg: str) -> NoReturn:
+        """
+        Написание сообщения во все имеющиеся handler в зависимости от назначенного уровня испольнения
+
+        Notes:
+            * Уровни используются из стандартной библиотеки ``logging``
+            * ``level`` передавать строкой
+
+        Examples:
+            Пример написания лога на уровне INFO
+
+            >>> loggerObject.write_log("INFO", "Начало выполнения фукнции example")
+
+        Args:
+            level (str): Уровень сообщения
+            msg (str): Текст сообщения
+        """
         self.logger.log(level=eval(f"logging.{level}"), msg=msg)

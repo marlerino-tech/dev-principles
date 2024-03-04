@@ -1,3 +1,10 @@
+"""
+Модуль для примера документирования роутера
+
+Attributes:
+    example_router (APIRouter): осмысленное описание роутера и его назначение
+"""
+
 from fastapi import APIRouter
 
 from .example import router

@@ -40,10 +40,10 @@ sync: ## Install dependencies
 
 .PHONY: start
 start: ## Starts the server
-	uvicorn core.server:app --reload --host 127.0.0.1 --port 8888
+	uvicorn core.server:app --reload --host 127.0.0.1 --port $(PORT)
 
 .PHONY: start_deploy
-start_deploy: ## Starts the server
+start_deploy: ## Starts the server for deploy
 	gunicorn core.server:app --workers $(WORKERS) --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$(PORT)
 
 docker_start:

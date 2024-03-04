@@ -46,5 +46,5 @@ COPY ./Makefile .
 
 EXPOSE 8888
 ENTRYPOINT ["gunicorn", "core.server:app"]
-CMD ["--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8888"]
+CMD ["--workers", "$WORKERS", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:$PORT"]
 
