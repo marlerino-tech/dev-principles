@@ -14,6 +14,7 @@ class EnvironmentType(str, Enum):
     """
     Типы возможного окружения
     """
+
     DEVELOPMENT = "development"
     PRODUCTION = "production"
     TEST = "test"
@@ -31,6 +32,7 @@ class Config(BaseConfig):
     Notes:
         Переменные могут браться как и из окружения, так и задаваться в ``config`` напрямую
     """
+
     DEBUG: int = 0
     DEFAULT_LOCALE: str = "en_US"
     ENVIRONMENT: str = EnvironmentType(os.environ.get("ENVIRONMENT"))

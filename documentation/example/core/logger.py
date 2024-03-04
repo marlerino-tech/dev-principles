@@ -35,6 +35,7 @@ class TelegramHandler(logging.Handler):
         token (str): Токен для бота
         chat_ids (list[int]): Список chat_id куда отправлять
     """
+
     def __init__(self, token: str, chat_ids: list[int]):
         super().__init__()
         self.token = token

@@ -10,8 +10,8 @@ router = APIRouter()
 """
 
 
-@router.get(path="/work", status_code=200)
-async def get_work(id: Query(...) = 1) -> dict:
+@router.get(path="/work", response_model=None)
+async def get_work(id: Query(...) = 1):
     """
     Возвращает сообщение о работе
 
@@ -40,8 +40,10 @@ class Todo(BaseModel):
     """
     Модель для создания таска
     """
+
     title: str
     description: str
+
 
 # TODO: create connection to db and add todo dict in database
 @router.post(path="/todo")

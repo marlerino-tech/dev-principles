@@ -54,6 +54,7 @@ def init_listeners(app_: FastAPI) -> None:
     """
     Прослушка исключения порождённых от ``CustomException`` и возврат кастомного ответа в виде ``JSON``
     """
+
     @app_.exception_handler(CustomException)
     async def custom_exception_handler(request: Request, exc: CustomException):
         return JSONResponse(

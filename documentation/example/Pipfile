@@ -12,6 +12,9 @@ pydantic = "==1.10.14"
 python-dotenv = "*"
 
 [dev-packages]
+isort = "*"
+black = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.11"

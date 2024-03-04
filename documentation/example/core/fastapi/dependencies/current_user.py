@@ -1,6 +1,6 @@
+from app.controllers.user import UserController
 from fastapi import Depends, Request
 
-from app.controllers.user import UserController
 from core.factory import Factory
 
 

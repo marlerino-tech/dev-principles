@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional, Tuple
 
+from app.schemas.extras.current_user import CurrentUser
 from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
 from starlette.authentication import AuthenticationBackend
@@ -9,7 +10,6 @@ from starlette.middleware.authentication import (
 )
 from starlette.requests import HTTPConnection
 
-from app.schemas.extras.current_user import CurrentUser
 from core.config import config
 from core.exceptions import CustomException
 from core.security.jwt import JWTExpiredError
