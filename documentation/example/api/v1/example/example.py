@@ -10,8 +10,21 @@ router = APIRouter()
 """
 
 
-@router.get(path="/work", response_model=None)
-async def get_work(id: Query(...) = 1):
+class MessageModel(BaseModel):
+    """
+    Модель для сообщения
+    """
+
+    message: str
+    id: int
+
+
+@router.get(
+    path="/work",
+    response_model=MessageModel,
+    description="empty"
+)
+async def get_work(id: int = 1):
     """
     Возвращает сообщение о работе
 
@@ -21,12 +34,16 @@ async def get_work(id: Query(...) = 1):
     Returns:
         dict: Словарь включающий сообщение и ID
     """
-    return {"message": "Work", "id": id}
+    return MessageModel(message="Work", id=id)
 
 
 # FIXME: rewrite algorithm
-@router.get(path="/dont_work")
-async def dont_work() -> dict:
+@router.get(
+    path="/dont_work",
+    response_model=dict,
+    description="empty"
+)
+async def dont_work():
     """
     Показывает пример использования смысловых комментариев
 
@@ -46,7 +63,11 @@ class Todo(BaseModel):
 
 
 # TODO: create connection to db and add todo dict in database
-@router.post(path="/todo")
+@router.post(
+    path="/todo",
+    response_model=Todo,
+    description="empty"
+)
 async def create_todo(todo: Todo) -> dict:
     """
     Создание todo таска

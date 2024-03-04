@@ -8,8 +8,9 @@ fastapi = "*"
 requests = "*"
 uvicorn = "*"
 gunicorn = "*"
-pydantic = "==1.10.14"
 python-dotenv = "*"
+pydantic = "*"
+pydantic-settings = "*"
 
 [dev-packages]
 isort = "*"

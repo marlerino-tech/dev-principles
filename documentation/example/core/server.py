@@ -14,10 +14,7 @@ from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
-    AuthBackend,
-    AuthenticationMiddleware,
     ResponseLoggerMiddleware,
-    SQLAlchemyMiddleware,
 )
 
 
@@ -78,12 +75,6 @@ def make_middleware() -> List[Middleware]:
             allow_methods=["*"],
             allow_headers=["*"],
         ),
-        Middleware(
-            AuthenticationMiddleware,
-            backend=AuthBackend(),
-            on_error=on_auth_error,
-        ),
-        Middleware(SQLAlchemyMiddleware),
         Middleware(ResponseLoggerMiddleware),
     ]
     return middleware
