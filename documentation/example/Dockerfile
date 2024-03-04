@@ -37,18 +37,10 @@ WORKDIR /backend
 
 
 # Install application into container
-COPY ./app ./app
+COPY ./api ./api
 COPY ./core ./core
-COPY ./templates ./templates
-COPY ./static ./static
-COPY ./langs ./langs
 
 COPY ./Makefile .
-
-RUN mkdir -p ./log
-RUN mkdir -p ./applications
-COPY ./applications/manifest.php ./applications/manifest.php
-RUN mkdir -p ./static/img
 
 #USER appuser
 
