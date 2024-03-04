@@ -39,12 +39,10 @@ WORKDIR /backend
 # Install application into container
 COPY ./api ./api
 COPY ./core ./core
+COPY ./scripts ./scripts
 
 COPY ./Makefile .
 
 #USER appuser
 
-EXPOSE 8888
-ENTRYPOINT ["gunicorn", "core.server:app"]
-CMD ["--workers", "$WORKERS", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:$PORT"]
-
+EXPOSE $PORT

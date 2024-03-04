@@ -5,7 +5,7 @@ services:
     build:
       dockerfile: ./Dockerfile
     ports:
-      - "9999:8888"
+      - "0.0.0.0:10000:8888"
     env_file: .env.prod
     restart: unless-stopped
     command: ["./scripts/start.sh"]
