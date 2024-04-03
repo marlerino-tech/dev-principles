@@ -6,6 +6,12 @@
 
 **Обязательно к прочтению:** https://google.github.io/styleguide/pyguide.html
 или pdf приложенная
+
+**Для особого искушения)**
+- https://peps.python.org/pep-0008/
+- https://www.python.org/dev/peps/pep-0257/
+- https://peps.python.org/pep-0484/
+
 ## ⚙️ Для настройки в PyCharm:
 
 `Settings -> Tools -> Python Integrated Tools -> Docstring Format -> Google`

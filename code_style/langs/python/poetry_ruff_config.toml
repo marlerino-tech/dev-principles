@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "example"
+version = "0.1.0"
+description = ""
+authors = ["begenFmg <n_perminov@marlerino.group>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.3.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# settings for google python style
+[tool.ruff]
+line-length = 80
+src = ["."]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # isort
+    "I",
+    # tidy imports
+    "TID",
+    # flake8-bugbear
+    "B",
+    # pydocstyle
+    "D",
+    # pyugrade
+    "UP"
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
