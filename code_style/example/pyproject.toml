@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "example"
+version = "0.1.0"
+description = ""
+authors = ["begenFmg <n_perminov@marlerino.group>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.3.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+extend-exclude = [
+    "bad_example.py"
+]
+line-length = 80
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "D",
+    "UP"
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
