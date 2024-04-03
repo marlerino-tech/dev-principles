@@ -5,7 +5,7 @@
 Достаточно современный и удобный стиль, без трудностей reStructedText.
 
 **Обязательно к прочтению:** https://google.github.io/styleguide/pyguide.html
-
+или pdf приложенная
 ## ⚙️ Для настройки в PyCharm:
 
 `Settings -> Tools -> Python Integrated Tools -> Docstring Format -> Google`
@@ -13,3 +13,5 @@
 2. Дальше секция `Tools`
 3. Дальше секция `Python Integrated Tools`
 4. В поле `Docstring Format` выбираем **Google**
+
+## 🦀 Настройка Ruff(linter and formatter)
