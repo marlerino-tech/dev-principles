@@ -5,4 +5,4 @@
 
 ## [📁 Документация](/documentation)
 
-## [🆘 Code style](/code-style)
+## [🆘 Code style](/code_style)
