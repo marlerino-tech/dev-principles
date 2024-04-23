@@ -21,3 +21,6 @@
 4. В поле `Docstring Format` выбираем **Google**
 
 ## 🦀 Настройка Ruff(linter and formatter)
+### Команды
+- `ruff check <filename>` - lint
+- `ruff format <filename>` - format
