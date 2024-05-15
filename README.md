@@ -6,3 +6,5 @@
 ## [📁 Документация](/documentation)
 
 ## [🆘 Code style](/code_style)
+
+## [😇 Best practices](/best_practices)
