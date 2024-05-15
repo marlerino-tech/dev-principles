@@ -1,0 +1,55 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-ast
+      - id: trailing-whitespace
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.1.0
+    hooks:
+      - id: add-trailing-comma
+
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: Format code with Ruff
+        entry: poetry run ruff format
+        language: system
+        types: [python]
+        args:
+          - --config
+          - ./pyproject.toml
+
+      - id: ruff-fix
+        name: Fix linting ss with Ruff
+        entry: poetry run ruff check
+        language: system
+        types: [ python ]
+        args:
+          - --fix
+          - --config
+          - ./pyproject.toml
+
+      - id: ruff-lint
+        name: Check lint with Ruff
+        entry: poetry run ruff check
+        language: system
+        types: [ python ]
+        args:
+          - --config
+          - ./pyproject.toml
+
+      - id: mypy
+        name: Validate types with MyPy
+        entry: poetry run mypy
+        language: system
+        types: [ python ]
+        pass_filenames: false
+        args:
+          - src
+          - --install-types
+          - --non-interactive
