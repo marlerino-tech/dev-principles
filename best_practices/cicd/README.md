@@ -12,14 +12,14 @@
 Версия проекта подтягивается из `Makefile`
 
 ## fastapi-dockercompose
-### CI
+### CI - push and pull-request
 - Линтинг
 - Проверка типов с Mypy
 - Тесты, когда-нибудь...
-### Build Test / Production
+### Build Test / Production - push(dev/main)
 - Сборка образов
 - Отправка на dockerhub
-### CD
+### CD - push(main only)
 - Настройка `.env.prod` и подтягивание всех важных значений из `Github Secrets`
 - Подключение к серверу по `ssh`
 - Создание нужных папок на сервере
