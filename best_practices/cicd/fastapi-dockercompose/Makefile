@@ -89,7 +89,7 @@ check-precommit: ## Check
 
 # Docker and Docker-compose
 # -------------
-docker-setup: ## Create all needs docker stuff
+docker-setup-prod: ## Create all needs docker stuff
 	docker network ls | grep -q mmaster-db-data || docker volume create mmaster-db-data
 	docker network ls | grep -q mmaster-net || docker network create mmaster-net
 
@@ -107,13 +107,16 @@ docker-push: ## Push prod images
 	docker push $(DOCKER_USERNAME)/$(PROJECT_NAME):latest
 	docker push $(DOCKER_USERNAME)/$(PROJECT_NAME):$(PROJECT_VERSION)
 
-dc-up: ## Start prod docker-compose
-	docker-compose up -d --pull always
+dc-pull: ## Pull actual images
+	docker compose pull
 
 dc-down: ## Stop prod docker-compose
 	docker-compose down
 
-dc-start-prod: docker-setup dc-down dc-up ## Start prod docker-compose
+dc-up: ## Start prod docker-compose
+	docker-compose up -d
+
+dc-start-prod: docker-setup-prod dc-pull dc-down dc-up ## Start prod docker-compose
 
 dc-start-test:
 	docker-compose -f ./docker-compose.test.yaml down
