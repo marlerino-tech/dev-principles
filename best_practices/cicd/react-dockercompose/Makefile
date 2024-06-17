@@ -62,13 +62,10 @@ format: ## Run code formatter
 check-types: ## Check types
 	sudo npm run type-check
 
-.PHONE: setup-precommit
-setup-precommit: ## Install all hooks
-	pre-commit install
-
-.PHONE: check-precommit
-check-precommit: ## Check
-	pre-commit run --all-files
+.PHONE: setup-husky
+setup-husky: ## Install all hooks
+	npx husky init
+	npm run prepare
 
 # Docker and Docker-compose
 # -------------
@@ -93,10 +90,10 @@ dc-pull: ## Pull actual images
 	docker compose pull
 
 dc-down: ## Stop prod docker-compose
-	docker-compose down
+	docker compose down
 
 dc-up: ## Start prod docker-compose
-	docker-compose up -d
+	docker compose up -d
 
 dc-start-prod: docker-setup-prod dc-pull dc-down dc-up ## Start prod docker-compose
 
