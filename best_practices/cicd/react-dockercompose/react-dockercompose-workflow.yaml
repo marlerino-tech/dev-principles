@@ -1,0 +1,119 @@
+name: "CI/Build/CD Pipeline"
+
+on:
+  push:
+    paths-ignore:
+      - ".gitignore"
+      - "env.*.example"
+      - "README.md"
+  pull_request:
+    paths-ignore:
+      - ".gitignore"
+      - "env.*.example"
+      - "README.md"
+
+env:
+  BASE_DIR: react-template
+  DOCKERHUB_USERNAME: begenfmg
+
+jobs:
+  ci:
+    name: "Continuous Integration"
+    strategy:
+      matrix:
+        node-version: ["20.x"]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install the project dependencies
+        run: npm install
+      - name: Linting
+        run: npm run lint
+      - name: Type Checking
+        run: npm run type-check
+
+  build-test:
+    name: "Build test image"
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Extract name and version from Makefile
+        run: |
+          echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
+          echo "PROJECT_VERSION=$(grep -oP '^PROJECT_VERSION := \K.*' Makefile)" >> $GITHUB_ENV
+      - name: Build and push test
+        uses: docker/build-push-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }}-test,${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:test
+
+  build-prod:
+    name: "Build production image"
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Extract name and version from Makefile
+        run: |
+          echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
+          echo "PROJECT_VERSION=$(grep -oP '^PROJECT_VERSION := \K.*' Makefile)" >> $GITHUB_ENV
+      - name: Build and push production
+        uses: docker/build-push-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+          no-cache: true
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }},${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:latest
+
+  cd:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build-prod
+    name: "Continuous Deployment"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract name and version from Makefile
+        run: |
+          echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH }}
+      - name: Check project folder
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }}"
+      - name: Copy configs files
+        run: |
+          scp ./Makefile ./docker-compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }}
+      - name: Restart docker-compose
+        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd /${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }} && make dc-start-prod"
+
