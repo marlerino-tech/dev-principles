@@ -20,9 +20,6 @@ repos:
         entry: poetry run ruff format
         language: system
         types: [python]
-        args:
-          - --config
-          - ./pyproject.toml
 
       - id: ruff-fix
         name: Fix linting ss with Ruff
@@ -31,17 +28,12 @@ repos:
         types: [ python ]
         args:
           - --fix
-          - --config
-          - ./pyproject.toml
 
       - id: ruff-lint
         name: Check lint with Ruff
         entry: poetry run ruff check
         language: system
         types: [ python ]
-        args:
-          - --config
-          - ./pyproject.toml
 
       - id: mypy
         name: Validate types with MyPy
@@ -53,3 +45,9 @@ repos:
           - src
           - --install-types
           - --non-interactive
+
+      - id: check-version
+        name: Check Project Version and Name
+        entry: /bin/bash ./script/check_version.sh
+        language: script
+        files: ^(Makefile|pyproject\.toml)$
