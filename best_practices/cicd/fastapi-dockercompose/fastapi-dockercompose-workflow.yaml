@@ -140,7 +140,7 @@ jobs:
           POSTGRES_DB=${{ env.DB_NAME }}
           POSTGRES_USER=${{ env.DB_USER }}
           POSTGRES_PASSWORD=${{ env.DB_PASSWORD}}
-          REDIS_HOST=${{ env.BASE_NAME_DOCKER }}-cache
+          REDIS_HOST=${{ env.BASE_DIR }}-cache
           REDIS_PORT=${{ env.REDIS_PORT }}
           EOF
       - name: Extract name and version from Makefile
