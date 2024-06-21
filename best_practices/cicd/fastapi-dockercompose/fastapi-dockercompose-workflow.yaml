@@ -24,6 +24,7 @@ env:
   DB_PORT: ${{ vars.DB_PORT || '5432' }}
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  REDIS_HOST: ${{ vars.REDIS_HOST || '${{ vars.BASE_NAME_DOCKER }}-cache' }}
   REDIS_PORT: ${{ vars.REDIS_PORT || '6379' }}
   SERVER_SSH: ${{ secrets.SERVER_SSH }}
   SERVER_USER: ${{ secrets.SERVER_USER }}
