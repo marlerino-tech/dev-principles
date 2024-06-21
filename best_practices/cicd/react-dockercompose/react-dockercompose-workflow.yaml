@@ -5,23 +5,30 @@ on:
     paths-ignore:
       - ".gitignore"
       - "env.*.example"
+      - ".husky/pre-commit"
       - "README.md"
   pull_request:
     paths-ignore:
       - ".gitignore"
       - "env.*.example"
+      - ".husky/pre-commit"
       - "README.md"
 
 env:
-  BASE_DIR: react-template
-  DOCKERHUB_USERNAME: begenfmg
+  HUSKY: 0
+  BASE_DIR: ${{ vars.BASE_DIR || vars.BASE_NAME_DOCKER }}
+  DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+  DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+  SERVER_SSH: ${{ secrets.SERVER_SSH }}
+  SERVER_USER: ${{ secrets.SERVER_USER }}
+  SERVER_HOST: ${{ secrets.SERVER_HOST }}
 
 jobs:
   ci:
     name: "Continuous Integration"
     strategy:
       matrix:
-        node-version: ["20.x"]
+        node-version: [ "20.x" ]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -42,6 +49,7 @@ jobs:
         run: npm run type-check
 
   build-test:
+    needs: ci
     name: "Build test image"
     runs-on: ubuntu-22.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
@@ -55,7 +63,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ env.DOCKERHUB_PASSWORD }}
       - name: Extract name and version from Makefile
         run: |
           echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
@@ -68,6 +76,7 @@ jobs:
           tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }}-test,${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:test
 
   build-prod:
+    needs: ci
     name: "Build production image"
     runs-on: ubuntu-22.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -81,7 +90,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ env.DOCKERHUB_PASSWORD }}
       - name: Extract name and version from Makefile
         run: |
           echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
@@ -89,16 +98,16 @@ jobs:
       - name: Build and push production
         uses: docker/build-push-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/arm64/v8
           no-cache: true
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }},${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:latest
 
   cd:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build-prod
     name: "Continuous Deployment"
     runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - name: Extract name and version from Makefile
@@ -107,13 +116,10 @@ jobs:
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SERVER_SSH }}
+          ssh-private-key: ${{ env.SERVER_SSH }}
       - name: Check project folder
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }}"
+        run: ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p /${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }}"
       - name: Copy configs files
-        run: |
-          scp ./Makefile ./docker-compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }}
+        run: scp ./Makefile ./docker-compose.yaml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }}
       - name: Restart docker-compose
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd /${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }} && make dc-start-prod"
-
+        run: ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd /${{ env.BASE_DIR }}/${{ env.PROJECT_NAME }} && make dc-start-prod"
