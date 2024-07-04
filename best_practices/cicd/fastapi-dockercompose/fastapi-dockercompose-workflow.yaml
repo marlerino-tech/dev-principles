@@ -21,10 +21,11 @@ env:
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
   LOKI_URL: ${{ vars.LOKI_URL || 'http://loki:3100/loki/api/v1/push' }}
   DB_NAME: ${{ vars.DB_NAME }}
+  DB_HOST: ${{ vars.DB_HOST || format('{0}-db', vars.BASE_NAME_DOCKER) }}
   DB_PORT: ${{ vars.DB_PORT || '5432' }}
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  REDIS_HOST: ${{ vars.REDIS_HOST || '${{ vars.BASE_NAME_DOCKER }}-cache' }}
+  REDIS_HOST: ${{ vars.REDIS_HOST || format('{0}-cache', vars.BASE_NAME_DOCKER) }}
   REDIS_PORT: ${{ vars.REDIS_PORT || '6379' }}
   SERVER_SSH: ${{ secrets.SERVER_SSH }}
   SERVER_USER: ${{ secrets.SERVER_USER }}
