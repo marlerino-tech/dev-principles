@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Cache Node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -52,7 +52,7 @@ jobs:
     needs: ci
     name: "Build test image"
     runs-on: ubuntu-22.04
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/release/')
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
@@ -69,11 +69,11 @@ jobs:
           echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
           echo "PROJECT_VERSION=$(grep -oP '^PROJECT_VERSION := \K.*' Makefile)" >> $GITHUB_ENV
       - name: Build and push test
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }}-test,${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:test
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }}-dev,${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:dev
 
   build-prod:
     needs: ci
@@ -96,7 +96,7 @@ jobs:
           echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
           echo "PROJECT_VERSION=$(grep -oP '^PROJECT_VERSION := \K.*' Makefile)" >> $GITHUB_ENV
       - name: Build and push production
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64,linux/arm64/v8
           no-cache: true

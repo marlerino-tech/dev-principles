@@ -19,6 +19,8 @@ env:
   BASE_DIR: ${{ vars.BASE_DIR || vars.BASE_NAME_DOCKER }}
   DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+#   Опциональный параметр, если в образе используются приватные пакеты
+#   BUILD_SSH_KEY: ${{ secrets.BUILD_SSH_KEY }}
   LOKI_URL: ${{ vars.LOKI_URL || 'http://loki:3100/loki/api/v1/push' }}
   DB_NAME: ${{ vars.DB_NAME }}
   DB_HOST: ${{ vars.DB_HOST || format('{0}-db', vars.BASE_NAME_DOCKER) }}
@@ -71,7 +73,7 @@ jobs:
     needs: ci
     name: "Build test image"
     runs-on: ubuntu-22.04
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/release/')
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
@@ -87,12 +89,17 @@ jobs:
         run: |
           echo "PROJECT_NAME=$(grep -oP '^PROJECT_NAME := \K.*' Makefile)" >> $GITHUB_ENV
           echo "PROJECT_VERSION=$(grep -oP '^PROJECT_VERSION := \K.*' Makefile)" >> $GITHUB_ENV
+#      - name: Set up SSH agent
+#        uses: webfactory/ssh-agent@v0.9.0
+#        with:
+#          ssh-private-key: ${{ env.BUILD_SSH_KEY }}
       - name: Build and push test
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }}-test,${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:test
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:${{ env.PROJECT_VERSION }}-dev,${{ env.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}:dev
+#          ssh: default
 
   build-prod:
     needs: ci
