@@ -1,9 +1,9 @@
 {
-  "id": 1553930,
+  "id": 1553953,
   "name": "GitFlow | General Branch",
   "target": "branch",
   "source_type": "Repository",
-  "source": "marlerino-tech/pushok-backend-push",
+  "source": "marlerino-tech/pushok-backend-user",
   "enforcement": "active",
   "conditions": {
     "ref_name": {
@@ -33,6 +33,19 @@
         "require_code_owner_review": false,
         "require_last_push_approval": false,
         "required_review_thread_resolution": true
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          {
+            "context": "pipeline",
+            "integration_id": 15368
+          }
+        ]
       }
     }
   ],
