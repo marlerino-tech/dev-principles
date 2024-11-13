@@ -11,7 +11,7 @@
       "include": [
         "refs/heads/main",
         "refs/heads/develop",
-        "refs/heads/release/**/*"
+        "refs/heads/story/**/*"
       ]
     }
   },
